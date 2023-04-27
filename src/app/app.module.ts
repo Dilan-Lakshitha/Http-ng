@@ -13,7 +13,7 @@ import { EditReaderComponent } from './edit-reader/edit-reader.component';
 import { BookTrackerErrorHandlerService } from './core/book-tracker-error-handler.service';
 import { AddHeaderInterceptor } from './core/add-header.interceptor';
 import { LogResponseInterceptor } from './core/log-response.interceptor';
-import { CacheInterceptor } from './core/cahe.interceptor';
+import { CacheInterceptor } from './core/cache.interceptor';
 
 @NgModule({
   declarations: [

@@ -219,7 +219,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_book_tracker_error_handler_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./core/book-tracker-error-handler.service */ 9772);
 /* harmony import */ var _core_add_header_interceptor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./core/add-header.interceptor */ 1483);
 /* harmony import */ var _core_log_response_interceptor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./core/log-response.interceptor */ 9079);
-/* harmony import */ var _core_cahe_interceptor__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./core/cahe.interceptor */ 261);
+/* harmony import */ var _core_cache_interceptor__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./core/cache.interceptor */ 354);
 
 
 
@@ -252,7 +252,7 @@ AppModule = (0,tslib__WEBPACK_IMPORTED_MODULE_11__.__decorate)([
             { provide: _angular_core__WEBPACK_IMPORTED_MODULE_12__.ErrorHandler, useClass: _core_book_tracker_error_handler_service__WEBPACK_IMPORTED_MODULE_7__.BookTrackerErrorHandlerService },
             { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_13__.HTTP_INTERCEPTORS, useClass: _core_add_header_interceptor__WEBPACK_IMPORTED_MODULE_8__.AddHeaderInterceptor, multi: true },
             { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_13__.HTTP_INTERCEPTORS, useClass: _core_log_response_interceptor__WEBPACK_IMPORTED_MODULE_9__.LogResponseInterceptor, multi: true },
-            { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_13__.HTTP_INTERCEPTORS, useClass: _core_cahe_interceptor__WEBPACK_IMPORTED_MODULE_10__.CacheInterceptor, multi: true }
+            { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_13__.HTTP_INTERCEPTORS, useClass: _core_cache_interceptor__WEBPACK_IMPORTED_MODULE_10__.CacheInterceptor, multi: true }
         ],
         imports: [
             _angular_platform_browser__WEBPACK_IMPORTED_MODULE_14__.BrowserModule,
@@ -423,22 +423,23 @@ BooksResolverService = (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__decorate)([
 
 /***/ }),
 
-/***/ 261:
-/*!******************************************!*\
-  !*** ./src/app/core/cahe.interceptor.ts ***!
-  \******************************************/
+/***/ 354:
+/*!*******************************************!*\
+  !*** ./src/app/core/cache.interceptor.ts ***!
+  \*******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CACHEABLE": () => (/* binding */ CACHEABLE),
 /* harmony export */   "CacheInterceptor": () => (/* binding */ CacheInterceptor)
 /* harmony export */ });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! tslib */ 4762);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 7716);
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ 1841);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ 5917);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 8307);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ 1841);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 5917);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 8307);
 /* harmony import */ var _http_cache_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./http-cache.service */ 74);
 
 
@@ -446,11 +447,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const CACHEABLE = new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__.HttpContextToken(() => true);
 let CacheInterceptor = class CacheInterceptor {
     constructor(cacheservices) {
         this.cacheservices = cacheservices;
     }
     intercept(req, next) {
+        //only cache requests configured to be cacheable
+        if (!req.context.get(CACHEABLE)) {
+            return next.handle(req);
+        }
         //pass along non-cacheable requests and invalidate cache
         if (req.method !== 'get') {
             console.log(`Invalidating cache: ${req.method} ${req.url}`);
@@ -463,11 +469,11 @@ let CacheInterceptor = class CacheInterceptor {
         if (cachedResponse) {
             console.log(`Returning a cached reponse : ${cachedResponse.url}`);
             console.log(cachedResponse);
-            return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(cachedResponse);
+            return (0,rxjs__WEBPACK_IMPORTED_MODULE_2__.of)(cachedResponse);
         }
         //send request to server and add reponse to cache
-        return next.handle(req).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.tap)(event => {
-            if (event instanceof _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpResponse) {
+        return next.handle(req).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.tap)(event => {
+            if (event instanceof _angular_common_http__WEBPACK_IMPORTED_MODULE_1__.HttpResponse) {
                 console.log(`Adding item to cache: ${req.url}`);
                 this.cacheservices.put(req.url, event);
             }
@@ -505,7 +511,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs/operators */ 8307);
 /* harmony import */ var app_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! app/data */ 8387);
 /* harmony import */ var app_models_bookTrackerError__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! app/models/bookTrackerError */ 5582);
-/* harmony import */ var _add_header_interceptor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./add-header.interceptor */ 1483);
+/* harmony import */ var _cache_interceptor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cache.interceptor */ 354);
 
 
 
@@ -532,7 +538,7 @@ let DataService = class DataService {
     getAllBooks() {
         console.log('Getting sll books from the server.');
         return this.http.get(`/api/books`, {
-            context: new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpContext().set(_add_header_interceptor__WEBPACK_IMPORTED_MODULE_2__.CONTENT_TYPE, 'application/xml')
+            context: new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__.HttpContext().set(_cache_interceptor__WEBPACK_IMPORTED_MODULE_2__.CACHEABLE, false)
         })
             .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__.catchError)(err => this.handleHttpError(err)));
     }
