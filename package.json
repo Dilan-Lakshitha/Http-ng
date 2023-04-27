@@ -5,6 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"node server.js\"",
+    "start-prod": "concurrently --kill-others \"ng build --prod --watch --no-delete-output-path\" \"node server.js\"",
+    
     "build": "ng build && node server.js",
     "test": "ng test",
     "lint": "ng lint",

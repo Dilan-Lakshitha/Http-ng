@@ -349,8 +349,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! tslib */ 4762);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/core */ 7716);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 5917);
+/* harmony import */ var _data_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./data.service */ 3943);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ 5304);
-/* harmony import */ var app_core_data_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! app/core/data.service */ 3943);
 
 
 
@@ -366,7 +366,7 @@ let BooksResolverService = class BooksResolverService {
     }
 };
 BooksResolverService.ctorParameters = () => [
-    { type: app_core_data_service__WEBPACK_IMPORTED_MODULE_0__.DataService }
+    { type: _data_service__WEBPACK_IMPORTED_MODULE_0__.DataService }
 ];
 BooksResolverService = (0,tslib__WEBPACK_IMPORTED_MODULE_3__.__decorate)([
     (0,_angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable)({
@@ -391,9 +391,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! tslib */ 4762);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/core */ 7716);
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ 1841);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 205);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 5304);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ 1841);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ 205);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 5304);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs/operators */ 8002);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs/operators */ 8307);
 /* harmony import */ var app_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! app/data */ 8387);
@@ -419,21 +419,29 @@ let DataService = class DataService {
     getReaderById(id) {
         return app_data__WEBPACK_IMPORTED_MODULE_0__.allReaders.find(reader => reader.readerID === id);
     }
+    //Retriving a Collection
     getAllBooks() {
-        console.log('Getting all books from the server.');
-        return this.http.get(`/api/books`)
-            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.catchError)(err => this.handleHttpError(err)));
+        console.log('Getting sll books from the server.');
+        return this.http.get(`/api/books`, {
+            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
+                'Accept': 'application/json',
+                'Authorization': 'my-token'
+            })
+        })
+            .pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.catchError)(err => this.handleHttpError(err)));
     }
+    //Handling Http Errors
     handleHttpError(error) {
         let dataError = new app_models_bookTrackerError__WEBPACK_IMPORTED_MODULE_1__.BookTrackerError();
         dataError.errorNumber = 100;
         dataError.message = error.statusText;
-        dataError.friendlyMessage = 'An error occurred retrieving data.';
-        return (0,rxjs__WEBPACK_IMPORTED_MODULE_3__.throwError)(dataError);
+        dataError.friendlyMessage = 'An error Occured retrieving data.';
+        return (0,rxjs__WEBPACK_IMPORTED_MODULE_4__.throwError)(dataError);
     }
+    //Retrvieving a Single Item
     getBookById(id) {
         return this.http.get(`/api/books/${id}`, {
-            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_4__.HttpHeaders({
+            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
                 'Accept': 'application/json',
                 'Authorization': 'my-token'
             })
@@ -446,26 +454,29 @@ let DataService = class DataService {
             year: b.publicationYear
         })), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__.tap)(classicBook => console.log(classicBook)));
     }
+    //Insert
     addBook(newBook) {
-        return this.http.post(`/api/books`, newBook, {
-            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_4__.HttpHeaders({
+        return this.http.post('/api/books', newBook, {
+            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
                 'Content-Type': 'application/json'
             })
         });
     }
+    //Update
     updateBook(updatedBook) {
         return this.http.put(`/api/books/${updatedBook.bookID}`, updatedBook, {
-            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_4__.HttpHeaders({
+            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpHeaders({
                 'Content-Type': 'application/json'
             })
         });
     }
+    //Delete
     deleteBook(bookID) {
         return this.http.delete(`/api/books/${bookID}`);
     }
 };
 DataService.ctorParameters = () => [
-    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_4__.HttpClient }
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__.HttpClient }
 ];
 DataService = (0,tslib__WEBPACK_IMPORTED_MODULE_7__.__decorate)([
     (0,_angular_core__WEBPACK_IMPORTED_MODULE_8__.Injectable)({
@@ -492,9 +503,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _raw_loader_dashboard_component_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !raw-loader!./dashboard.component.html */ 9306);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/core */ 7716);
 /* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/platform-browser */ 9075);
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ 9895);
 /* harmony import */ var app_core_data_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! app/core/data.service */ 3943);
 /* harmony import */ var app_models_bookTrackerError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! app/models/bookTrackerError */ 5582);
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ 9895);
 
 
 
@@ -511,7 +522,7 @@ let DashboardComponent = class DashboardComponent {
     ngOnInit() {
         let resolvedData = this.route.snapshot.data['resolvedBooks'];
         if (resolvedData instanceof app_models_bookTrackerError__WEBPACK_IMPORTED_MODULE_2__.BookTrackerError) {
-            console.log(`Dashboard component error: ${resolvedData.friendlyMessage}`);
+            console.log(`Dashboard Component error : ${resolvedData.friendlyMessage}`);
         }
         else {
             this.allBooks = resolvedData;
@@ -719,7 +730,8 @@ __webpack_require__.r(__webpack_exports__);
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 const environment = {
-    production: false
+    production: false,
+    baseUrl: 'http://localhost:3000'
 };
 /*
  * For easier debugging in development mode, you can import the following file
